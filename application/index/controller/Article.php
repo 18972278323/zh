@@ -11,6 +11,7 @@ namespace app\index\controller;
 
 use app\common\controller\Base;
 use app\common\model\ArticleCat;
+use app\common\model\Article as ArticleModel;
 use think\facade\Request;
 
 class Article extends Base
@@ -29,8 +30,36 @@ class Article extends Base
             }
 
             return $this->view->fetch();
-        }else{ // 保存数据
+        }else if(Request::isPost()){ // 保存数据
+            $data = (Request::post());
+            $articleRule = "app\\common\\validate\\ArticleVal";
+            $res = $this->validate($data,$articleRule);
+            halt($data);
 
+            if($res !== true){
+                echo '<script>alert("'.$res.'");window.history.back(-1);</script>';
+            }else{ // 验证通过,处理文件上传,获取文件路径
+                $img = Request::file('title_img');
+
+                if($img){
+                    $uploadRes = $img->move('uploads');
+
+                    if($uploadRes){
+                        $data['title_img'] = $uploadRes->getSaveName();
+                        halt($data);
+                    }else{
+                        $this->error('文件上传失败');
+                    }
+
+                    // 保存信息
+                    $saveRes = ArticleModel::create($data);
+                    if($saveRes){
+                        $this->redirect(url('Index/index'));
+                    }else{
+                        $this->error('文章发布失败');
+                    }
+                }
+            }
         }
     }
 }

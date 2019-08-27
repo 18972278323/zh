@@ -75,7 +75,7 @@ class User extends Base
                 // 存储Session
                 Session::set('name', $user['name']);
                 Session::set('id', $user['id']);
-                Session::set('id', $user['is_admin']);
+                Session::set('role', $user['is_admin']);
 
                 return ['status'=>1,'message'=>'登录成功']; // 登录成功
             }

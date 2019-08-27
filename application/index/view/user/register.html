@@ -1,13 +1,14 @@
+{extend name="public/base" /}
 
-{include file="public/header"}
-
-<!--导航条-->
-{include file="public/nav"}
+{block name="body"}
 
 <div class="row">
     <div class="col-md-8">
         <div class="page-header">
-            <h3>用户注册</h3>
+            <p>
+                <span style="font-size: 24px">用户注册</span>&nbsp;&nbsp;
+                <span>已有账号，去<a href="{:url('User/login')}">登录</a></span>
+            </p>
         </div>
 
         <form class="form-horizontal" id="login">
@@ -52,15 +53,6 @@
 
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox">记住密码
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
                     <button type="button" class="btn btn-default" id="register">注册</button>
                 </div>
             </div>
@@ -91,14 +83,6 @@
                     data: $('#login').serialize(),
                     dataType: 'json',
                     success: function (data) {
-                        // if (data.status == 1){
-                        //     alert(data.message);
-                        //     window.location.href = "{:url('index/Index/index')}";
-                        //
-                        // }else{
-                        //     alert(data.message);
-                        //     // window.location.href = "{:url('index/Index/index')}";
-                        // }
                         switch (data.status) {
                             case 1:
                                 window.location.href = "{:url('index/Index/index')}";
@@ -119,5 +103,4 @@
     </script>
 
     <!--右侧最新排行-->
-    {include file="public/right"}
-    {include file="public/footer"}
+{/block}

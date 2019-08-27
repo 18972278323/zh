@@ -7,13 +7,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">{$siteName|default='社区问答'}</a>
+            <a class="navbar-brand" href="{:url('index/Index/index')}">{$siteName|default='社区问答'}</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">首页<span class="sr-only">(current)</span></a></li>
-                <li><a href="#">PHP<span class="sr-only">(current)</span></a></li>
+                <li class="active"><a href="#">全部文章</a></li>
+                <li><a href="#">PHP</span></a></li>
                 <li><a href="#">Java</a></li>
             </ul>
 
@@ -26,16 +26,21 @@
                     </div>
                     <button type="submit" class="btn btn-default">搜索</button>
                 </form>
-                <li><a href="#">{$Think.session.name|default='管理员'}</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">操作<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">用户信息</a></li>
-                        <li><a href="#">发布文章</a></li>
-                        <li><a href="#">退出登录</a></li>
-                        <!--<li role="separator" class="divider">这是啥呀</li>-->
-                    </ul>
-                </li>
+                {empty name = 'Think.session.name'}
+                    <li><a href="{:url('User/login')}">登录</a></li>
+                    <li><a href="{:url('Article/insert')}">发布文章</a></li>
+                {else /}
+                    <li><a href="">{$Think.session.name}</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">操作<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{:url('User/info')}">用户信息</a></li>
+                            <li><a href="{:url('Article/insert')}">发布文章</a></li>
+                            <li><a href="{:url('User/logout')}">退出登录</a></li>
+                        </ul>
+                    </li>
+                {/empty}
+
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

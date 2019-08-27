@@ -31,5 +31,12 @@ class UserVal extends Validate
             'number'    => 'number',
             'unique'    => 'zh_user',
         ],
+        'birthday|生日'=>[
+            'require'=>'require',
+        ],
     ];
+
+
+
+
 }

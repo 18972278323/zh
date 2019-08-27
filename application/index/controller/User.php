@@ -20,19 +20,21 @@ class User extends Base
         return $this->view->fetch();
     }
 
+
     /**
      * 执行插入用户注册数据
      * @return array
      */
     public function insert(){
+//            return ['status'=>1,'message'=>'注册成功'];
 
         if(Request::isAjax()){
             // 接收数据进行验证
             $data = Request::post();
-            dump($data);die;
+//            dump($data);die;
             $rule = "app\\common\\validate\\UserVal";
             $res = $this->validate($data,$rule);
-            $res = true;
+//            $res = true;
 
             if($res !== true){
                 return ['status'=>-1,'message'=>$res];
@@ -47,6 +49,18 @@ class User extends Base
             }
         }else{ // 非法操作,提示返回
             $this->redirect(url('User/register',['message'=>'非法操作,请重试']));
+        }
+    }
+
+    /**
+     * 用户登录
+     *
+     */
+    public function login(){
+        if(Request::isAjax()){
+
+        }else if(Request::isGet()){
+            return $this->view->fetch('login',['title'=>'欢迎登录']);
         }
     }
 }

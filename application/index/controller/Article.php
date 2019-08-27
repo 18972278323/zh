@@ -34,7 +34,7 @@ class Article extends Base
             $data = (Request::post());
             $articleRule = "app\\common\\validate\\ArticleVal";
             $res = $this->validate($data,$articleRule);
-            halt($data);
+//            halt($data);
 
             if($res !== true){
                 echo '<script>alert("'.$res.'");window.history.back(-1);</script>';
@@ -42,11 +42,13 @@ class Article extends Base
                 $img = Request::file('title_img');
 
                 if($img){
-                    $uploadRes = $img->move('uploads');
+                    $uploadRes = $img->validate([
+                        'size'=>50000000,
+//                        'ext'=>'jpg,png,jpeg,gif'
+                    ])->move('uploads');
 
                     if($uploadRes){
                         $data['title_img'] = $uploadRes->getSaveName();
-                        halt($data);
                     }else{
                         $this->error('文件上传失败');
                     }

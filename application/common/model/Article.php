@@ -21,7 +21,7 @@ class Article extends Model
     protected $updateTime = 'update_time';
 
     // 新增自动完成
-    protected $insert = ['is_hot'=>0,'is_top'=>0,'pv'=>0,'status'=>0,'create_time'];
+    protected $insert = ['is_hot'=>0,'is_top'=>0,'pv'=>0,'status'=>1,'create_time'];
 
     protected $update = ['update_time'];
 

@@ -14,6 +14,10 @@ class Index extends Base
      */
     public function index()
     {
+        // 查询文章列表数据
+        $article = new Article();
+        $article->getArtList();
+
         $this->view->assign('title','首页');
         return $this->view->fetch();
     }

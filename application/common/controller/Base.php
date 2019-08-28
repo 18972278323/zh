@@ -5,6 +5,7 @@
 
 namespace app\common\controller;
 
+use app\common\model\ArticleCat;
 use think\Controller;
 use think\facade\Session;
 
@@ -17,7 +18,7 @@ class Base extends Controller
      */
     protected function initialize()
     {
-
+        $this->getCateList();
     }
 
     /**
@@ -41,5 +42,16 @@ class Base extends Controller
         if(!$res){
             $this->redirect(url('User/login'));
         }
+    }
+
+    /**
+     * 动态加载导航栏,在初始化方法中调用
+     */
+    public function getCateList(){
+        $cateList = ArticleCat::all(function($query){
+           $query->where('status','=',1)->order('sort','asc');
+        });
+
+        $this->view->assign('cateList',$cateList);
     }
 }

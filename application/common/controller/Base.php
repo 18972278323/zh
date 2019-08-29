@@ -42,4 +42,6 @@ class Base extends Controller
             $this->redirect(url('User/login'));
         }
     }
+
+
 }

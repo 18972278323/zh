@@ -12,6 +12,7 @@ namespace app\index\controller;
 use app\common\controller\Base;
 use app\common\model\ArticleCat;
 use app\common\model\Article as ArticleModel;
+use think\Db;
 use think\facade\Request;
 
 class Article extends Base
@@ -34,7 +35,6 @@ class Article extends Base
             $data = (Request::post());
             $articleRule = "app\\common\\validate\\ArticleVal";
             $res = $this->validate($data,$articleRule);
-//            halt($data);
 
             if($res !== true){
                 echo '<script>alert("'.$res.'");window.history.back(-1);</script>';
@@ -44,7 +44,7 @@ class Article extends Base
                 if($img){
                     $uploadRes = $img->validate([
                         'size'=>50000000,
-//                        'ext'=>'jpg,png,jpeg,gif'
+                        'ext'=>'jpg,png,jpeg,gif'
                     ])->move('uploads');
 
                     if($uploadRes){
@@ -62,6 +62,33 @@ class Article extends Base
                     }
                 }
             }
+        }
+    }
+
+
+    /**
+     * 获取指定分类的文章列表
+     */
+    public function getArtList(){
+        if(Request::isGet()){
+            $cateId = Request::param('cate_id');
+            if($cateId){
+                $artList = Db::table('zh_article')
+                        ->where('cate_id','=',$cateId)
+                        ->where('status','=',1)
+                        ->order('create_time','desc')
+                        ->paginate(3);
+            }else{
+                $artList = Db::table('zh_article')
+                    ->where('status','=',1)
+                    ->order('create_time','asc')
+                    ->paginate(3);
+            }
+
+            $this->view->assign('artList', $artList);
+            $this->view->assign('title', '文章列表');
+            return $this->view->fetch('index/index');
+
         }
     }
 }

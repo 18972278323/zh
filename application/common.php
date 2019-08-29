@@ -10,3 +10,13 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
+function getUserName($id){
+    return \app\common\model\User::where('id','=',$id)->value('name');
+}
+
+function getArtContent($content)
+{   if(strlen($content)<30){
+        return $content;
+    }
+    return mb_substr(strip_tags($content),0,30).' ...';
+}

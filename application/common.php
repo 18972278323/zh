@@ -20,3 +20,7 @@ function getArtContent($content)
     }
     return mb_substr(strip_tags($content),0,30).' ...';
 }
+
+function getCatName($id){
+    return \app\common\model\ArticleCat::where('id','=',$id)->value('name');
+}

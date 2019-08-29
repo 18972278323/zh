@@ -1,0 +1,27 @@
+{extend name="public:base" /}
+{block name="body"}
+	<!-- 主体 -->
+	<div class="row">
+		<!-- 左侧8列 -->
+		<div class="col-md-8">
+		<!-- 页头 -->
+		<div class="page-header">
+  			<h2>{$art.cate_id|getCatName}</h2>
+		</div>
+
+		<div>			
+            
+             <h4>{$art.title}</h4>
+                <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
+               发布时间：{$art.create_time}&nbsp;&nbsp;
+               阅读量：{$art.pv}&nbsp;&nbsp;
+               </p>
+               <div>{:htmlspecialchars_decode($art.content)}</div>
+              <hr/>
+              <button type="button"
+               class="btn btn-default" id="fav" 
+               user_id="{$art.user_id}" article_id="{$art.id}"
+                      session_id="{$Think.session.user_id}">收藏</button>
+          </div> 
+
+{/block}

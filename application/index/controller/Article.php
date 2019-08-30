@@ -150,13 +150,13 @@ class Article extends Base
             $is_fav = Db::table('zh_user_fav')->where($criteria)->field('status')->find();
             $is_like = Db::table('zh_user_like')->where($criteria)->field('status')->find();
 
-            if($is_fav){ // null 或者 0 表示未收藏
+            if($is_fav['status']){ // null 或者 0 表示未收藏
                 $this->view->assign('is_fav',1);
             }else{
                 $this->view->assign('is_fav',0);
             }
 
-            if($is_like){ // null 或者 0 表示未点赞
+            if($is_like['status']){ // null 或者 0 表示未点赞
                 $this->view->assign('is_like',1);
             }else{
                 $this->view->assign('is_like',0);
@@ -226,6 +226,15 @@ class Article extends Base
     }
 
 
+    /**
+     * 处理文章点赞功能
+     * @return array
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
+     */
     public function like(){
         if(Request::isAjax()){
             $res = Request::param();
@@ -257,5 +266,13 @@ class Article extends Base
         }else{
             return ['status'=>-1,'message'=>'非法操作，请重试'];
         }
+    }
+
+
+    public function pv(){
+        $artId = Request::param('art_id');  // art_id
+
+        $res = ArticleModel::where('id','=',$artId)->setInc('pv');
+        return true;
     }
 }

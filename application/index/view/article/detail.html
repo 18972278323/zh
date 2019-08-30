@@ -36,13 +36,13 @@
                     {/eq}
 
         </div>
-
         <script>
             $(function () {
 
                 // 处理点赞请求
                 $('#like').on('click',function () {
                     // 获取文章id和登录用户id
+                    alert(1);
                     var userId = $(this).attr('session_id');
                     var artId = $(this).attr('article_id');
                     if(userId && artId){

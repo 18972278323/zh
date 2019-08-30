@@ -71,24 +71,58 @@ class Article extends Base
      */
     public function getArtList(){
         if(Request::isGet()){
+            // 添加查询条件
+            $maps = [];
+            $maps[] = ['status','=',1];
+
             $cateId = Request::param('cate_id');
             if($cateId){
+                $maps[] = ['cate_id','=',$cateId];
+            }
+
+            $keyword = Request::param('keyword');
+            if($keyword){
+                $maps[] = ['title','like','%'.$keyword.'%'];
+            }
+
+            if($cateId){
                 $artList = Db::table('zh_article')
-                        ->where('cate_id','=',$cateId)
-                        ->where('status','=',1)
+                        ->where($maps)
                         ->order('create_time','desc')
                         ->paginate(3);
+
+                $cateName = ArticleCat::where('id','=',$cateId)->value('name');
+                $this->view->assign('cateName', $cateName);
             }else{
                 $artList = Db::table('zh_article')
-                    ->where('status','=',1)
-                    ->order('create_time','asc')
+                    ->where($maps)
+                    ->order('create_time','desc')
                     ->paginate(3);
+
+                $this->view->assign('cateName', '全部文章');
+
             }
 
             $this->view->assign('artList', $artList);
-            $this->view->assign('title', '文章列表');
+            $this->view->assign('title', '首页');
             return $this->view->fetch('index/index');
 
         }
     }
+
+    /**
+     * 获取文章详情
+     */
+    public function detail(){
+        $artId = Request::param('id');
+
+        $art = ArticleModel::get($artId);
+        if($art){
+            $this->view->assign('art',$art);
+        }
+        $this->view->assign('title', '文章详情');
+        return $this->fetch();
+
+    }
+
 }

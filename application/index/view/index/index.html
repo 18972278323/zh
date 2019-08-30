@@ -2,26 +2,26 @@
 
 {block name="body"}
 
-<div class="row">
-<div class="col-md-8">
-    <div class="page-header">
-        <h3>全部文章</h3>
-    </div>
-    {volist name="artList" id="art" empty="当前暂无文章"}
-    <div>
-        <img class="img-rounded" src="/uploads/{$art.title_img}"
-             style="margin-right: 10px;float: left;width: 100px;height: 85px"/>
-        <div class="content-detail" style="float: left;width: 80%">
-            <!-- 获取当前文章的id -->
-            <h4><a href="{:url('detail',['id'=>$art.id])}">{$art.title}</a></h4>
-            <p>作者:{$art.user_id|getUserName}&nbsp;&nbsp;
-                发布时间：{$art.create_time|date='Y年m月d日'}&nbsp;&nbsp;
-            </p>
-            <div>{$art.content|getArtContent}</div>
-            <hr/>
+    <div class="row">
+    <div class="col-md-8">
+        <div class="page-header">
+            <h3>{$cateName|default="全部文章"}</h3>
         </div>
+        {volist name="artList" id="art" empty="当前暂无文章"}
+        <div>
+            <img class="img-rounded" src="/uploads/{$art.title_img}"
+                 style="margin-right: 10px;float: left;width: 100px;height: 85px"/>
+            <div class="content-detail" style="float: left;width: 80%">
+                <!-- 获取当前文章的id -->
+                <h4><a href="{:url('Article/detail',['id'=>$art.id])}">{$art.title}</a></h4>
+                <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
+                    发布时间：{$art.create_time|date='Y年m月d日'}&nbsp;&nbsp;
+                </p>
+                <div>{$art.content|getArtContent}</div>
+                <hr>
+            </div>
+        </div>
+        {/volist}
+        <div class="text-center">{$artList|raw}</div>
     </div>
-    {/volist}
-    <div class="text-center">{$artList|raw}</div>
-</div>
 {/block}

@@ -9,19 +9,116 @@
   			<h2>{$art.cate_id|getCatName}</h2>
 		</div>
 
-		<div>			
-            
-             <h4>{$art.title}</h4>
-                <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
-               发布时间：{$art.create_time}&nbsp;&nbsp;
-               阅读量：{$art.pv}&nbsp;&nbsp;
-               </p>
-               <div>{:htmlspecialchars_decode($art.content)}</div>
-              <hr/>
-              <button type="button"
-               class="btn btn-default" id="fav" 
-               user_id="{$art.user_id}" article_id="{$art.id}"
-                      session_id="{$Think.session.user_id}">收藏</button>
-          </div> 
+		<div>
+
+            <h4><b>{$art.title}</b></h4>
+            <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
+                发布时间：{$art.create_time}&nbsp;&nbsp;
+                阅读量：{$art.pv}&nbsp;&nbsp;
+            </p>
+            <div>{:htmlspecialchars_decode($art.content)}</div>
+            <hr/>
+
+            <button type="button"  article_id="{$art.id}" session_id="{$Think.session.id}" id="fav"
+                    {eq name="is_fav" value="1"}
+                        class="btn btn-success"  >已收藏</button>
+                    {/eq}
+                    {eq name="is_fav" value="0"}
+                        class="btn btn-default"  >收藏</button>
+                    {/eq}
+
+            <button type="button"  article_id="{$art.id}" session_id="{$Think.session.id}" id="like"
+                    {eq name="is_like" value="1"}
+                        class="btn btn-success"  >赞</button>
+                    {/eq}
+                    {eq name="is_like" value="0"}
+                        class="btn btn-default"  >赞</button>
+                    {/eq}
+
+        </div>
+
+        <script>
+            $(function () {
+
+                // 处理点赞请求
+                $('#like').on('click',function () {
+                    // 获取文章id和登录用户id
+                    var userId = $(this).attr('session_id');
+                    var artId = $(this).attr('article_id');
+                    if(userId && artId){
+                        $.ajax({
+                            type:'post',
+                            url:'{:url("Article/like")}',
+                            data:{
+                                user_id :userId,
+                                art_id : artId,
+                                time  : new Date().getTime(),
+                            },
+                            success:function (data) {
+                                switch (data.status) {
+                                    case 1:
+                                        $('#like').attr('class','btn btn-success');
+                                        break;
+                                    case 0:
+                                        $('#like').attr('class','btn btn-default');
+                                        break;
+                                    case -1:
+                                        alert(data.message);
+                                        break;
+                                }
+                            }
+                        })
+                    }else{
+                        // alert('请先去登录');
+                        if(confirm('请先去登录')){
+                            window.location.href = "{:url('index/User/login')}";
+                        }
+                    }
+                })
+
+
+                // 处理收藏请求
+                $('#fav').on('click',function () {
+                    // 获取当前文章的id和用户id
+                    var sessionId = $(this).attr('session_id');
+                    var artId = $(this).attr('article_id');
+                    if(sessionId && artId){
+                        $.ajax({
+                            type:'post',
+                            url:'{:url("index/Article/fav")}',
+                            data:{
+                                'sessionId':sessionId,
+                                'artId':artId,
+                                'time':new Date().getTime()
+                            },
+                            dataType:'json',
+                            success:function (data) {
+                                switch (data.status) {
+                                    case 1:
+                                        // 收藏成功
+                                        $('#fav').attr('class','btn btn-success');
+                                        $('#fav').text(data.message);
+                                        break;
+                                    case 0:
+                                        // 取消收藏
+                                        $('#fav').attr('class','btn btn-default');
+                                        $('#fav').text(data.message);
+                                        break;
+                                    case -1:
+                                        alert(data.message);
+                                        break;
+                                }
+                            }
+                        })
+
+                    }else{
+                        // alert('请先去登录');
+                        if(confirm('请先去登录')){
+                            window.location.href = "{:url('index/User/login')}";
+                        }
+                    }
+                })
+            })
+        </script>
 
 {/block}

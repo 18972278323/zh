@@ -14,9 +14,15 @@ use app\common\model\ArticleCat;
 use app\common\model\Article as ArticleModel;
 use think\Db;
 use think\facade\Request;
+use think\facade\Session;
 
 class Article extends Base
 {
+    /**
+     * 添加文章
+     * @return string|void
+     * @throws \think\Exception
+     */
     public function insert(){
         if(Request::isGet()){ // 判断登录，查询分类，分配数据，跳转页面
             $this->isLogin();
@@ -67,7 +73,10 @@ class Article extends Base
 
 
     /**
-     * 获取指定分类的文章列表
+     * 获取文章列表功能 包含搜索
+     * @return string
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
      */
     public function getArtList(){
         if(Request::isGet()){
@@ -112,17 +121,141 @@ class Article extends Base
 
     /**
      * 获取文章详情
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public function detail(){
         $artId = Request::param('id');
 
+        $criteria = [];
+        $criteria['art_id'] = $artId;
+
+        // 查询文章详
         $art = ArticleModel::get($artId);
         if($art){
             $this->view->assign('art',$art);
         }
+
+        // 默认向页面分配未收藏的变量
+        $this->view->assign('is_fav',0);
+        $this->view->assign('is_like',0);
+
+        // 如果用户登录，查询该文章是否被该用户收藏, 覆盖以上变量分配
+        $userId = Session::get('id');
+        if($userId){
+            $criteria['user_id'] = $userId;
+
+            $is_fav = Db::table('zh_user_fav')->where($criteria)->field('status')->find();
+            $is_like = Db::table('zh_user_like')->where($criteria)->field('status')->find();
+
+            if($is_fav){ // null 或者 0 表示未收藏
+                $this->view->assign('is_fav',1);
+            }else{
+                $this->view->assign('is_fav',0);
+            }
+
+            if($is_like){ // null 或者 0 表示未点赞
+                $this->view->assign('is_like',1);
+            }else{
+                $this->view->assign('is_like',0);
+            }
+        }
+
         $this->view->assign('title', '文章详情');
         return $this->fetch();
-
     }
 
+
+    /**
+     * 处理文章收藏请求
+     * @return array
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
+     */
+    public function fav(){
+        if(Request::isAjax()){
+            $res = Request::param(); // 登录用户id 文章id
+            unset($res['time']);
+
+            $fav = Db::table('zh_user_fav')
+                ->where('user_id','=',$res['sessionId'])
+                ->where('art_id','=',$res['artId'])
+                ->find();
+
+            if(!$fav){ // 当前没有记录 则新增记录
+                $info = Db::table('zh_user_fav')->insert([
+                    'user_id'   => $res['sessionId'],
+                    'art_id'    => $res['artId'],
+                    'status'    => 1,
+                ]);
+
+                if($info){
+                    return ['status'=>1,'message'=>'已收藏'];
+                }
+            }elseif ($fav['status'] === 0){   // 记录存在但未收藏，改为收藏
+                $info = Db::table('zh_user_fav')->where([
+                    'user_id'   => $res['sessionId'],
+                    'art_id'    => $res['artId'],
+                ])->update([
+                    'status'    => 1,
+                ]);
+
+                if($info){
+                    return ['status'=>1,'message'=>'已收藏'];
+                }
+            }else{ // 记录存在，已经收藏，改为未收藏
+                $info = Db::table('zh_user_fav')->where([
+                    'user_id'   => $res['sessionId'],
+                    'art_id'    => $res['artId'],
+                ])->update([
+                    'status'    => 0,
+                ]);
+
+                if($info){
+                    return ['status'=>0,'message'=>'收藏'];
+                }
+            }
+        }else{
+            return ['status'=>-1,'message'=>'非法操作，请重试'];
+        }
+    }
+
+
+    public function like(){
+        if(Request::isAjax()){
+            $res = Request::param();
+            unset($res['time']);
+
+            // 先去查询该记录是否存在
+            $like = Db::table('zh_user_like')->where($res)->find();
+
+            if(!$like){   //该点赞记录不存在 添加点赞的记录
+                $res['status'] = 1;
+                $info = Db::table('zh_user_like')->insert($res);
+
+                if($info){
+                    return ['status'=>1,'message'=>'已赞'];
+                }
+            }elseif ($like['status'] === 0){  // 点赞记录存在，但是未赞
+                $info = Db::table('zh_user_like')->where($res)->update(['status'=>1]);
+
+                if($info){
+                    return ['status'=>1,'message'=>'已赞'];
+                }
+            }elseif ($like['status'] === 1){
+                $info = Db::table('zh_user_like')->where($res)->update(['status'=>0]);
+
+                if($info){
+                    return ['status'=>0,'message'=>'取消赞'];
+                }
+            }
+        }else{
+            return ['status'=>-1,'message'=>'非法操作，请重试'];
+        }
+    }
 }

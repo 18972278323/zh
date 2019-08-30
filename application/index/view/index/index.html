@@ -13,7 +13,7 @@
                  style="margin-right: 10px;float: left;width: 100px;height: 85px"/>
             <div class="content-detail" style="float: left;width: 80%">
                 <!-- 获取当前文章的id -->
-                <h4><a href="{:url('Article/detail',['id'=>$art.id])}">{$art.title}</a></h4>
+                <h4><a href="{:url('Article/detail',['id'=>$art.id,'cate_id'=>$art.cate_id])}">{$art.title}</a></h4>
                 <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
                     发布时间：{$art.create_time|date='Y年m月d日'}&nbsp;&nbsp;
                 </p>

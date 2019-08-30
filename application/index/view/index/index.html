@@ -11,10 +11,11 @@
         <div>
             <img class="img-rounded" src="/uploads/{$art.title_img}"
                  style="margin-right: 10px;float: left;width: 100px;height: 85px"/>
+
             <div class="content-detail" style="float: left;width: 80%">
                 <!-- 获取当前文章的id -->
                 <!--<h4><a href="{:url('Article/detail',['id'=>$art.id,'cate_id'=>$art.cate_id])}"-->
-                <h4><a href="javascript:void(0);" id="title" artId="{$art.id}" catId="{$art.cate_id}">{$art.title}</a></h4>
+                <h4><a href="javascript:void(0);" class="title" artId="{$art.id}" catId="{$art.cate_id}">{$art.title}</a></h4>
                 <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
                     发布时间：{$art.create_time|date='Y年m月d日'}&nbsp;&nbsp;
                 </p>
@@ -25,10 +26,10 @@
         {/volist}
         <div class="text-center">{$artList|raw}</div>
     </div>
-
+        <!--art.id:{$art.id} | art.cate_id:{$art.cate_id}-->
     <script>
         $(function () {
-            $('#title').on('click', function () {
+            $('.title').on('click', function () {
                 var art_id = $(this).attr('artId');
                 var cate_id = $(this).attr('catId');
                 $.ajax({
@@ -37,10 +38,12 @@
                     data :{'art_id':art_id,'time':new Date().getTime()},
                     dataType:'json',
                     success:function (data) {
-                        alert(data);
+
                         // 跳转到详情页面
-                        // window.location.href = "{:url('Article/detail',['id'=>$art.id,'cate_id'=>$art.cate_id])}";
                         // window.location.href = "{:url('Article/detail',['id'=>"+art_id+",'cate_id'=>"+cate_id+"])}";
+                        var baseUrl = "{:url('Article/detail')}";
+                        baseUrl = baseUrl.substr(0,baseUrl.length-5);
+                        window.location.href = baseUrl+"/id/"+art_id+"/cate_id/"+cate_id+".html";
                     }
                 })
             })

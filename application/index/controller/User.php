@@ -8,6 +8,7 @@ use app\common\controller\Base;
 use think\facade\Request;
 use app\common\model\User as UserModel;
 use think\facade\Session;
+use think\Db;
 
 class User extends Base
 {
@@ -68,16 +69,28 @@ class User extends Base
             if($res !== true){
                 return ['status'=>-1,'message'=>$res];  //验证失败
             }else{
-                $user = UserModel::get(function ($query) use ($data){
-                    $query->where('email','=',$data['username'])->whereOr('mobile','=',$data['username'])->where('password','=',$data['password']);
-                });
+
+                $username = $data['username'];
+                $password = $data['password'];
+
+                $sql = "SELECT * FROM `zh_user` WHERE (`email` = '$username' OR
+                    `mobile` = '$username') AND `password` = '$password'  AND `status` = 1  LIMIT 1;";
+
+                $userExist = Db::query($sql);
 
                 // 存储Session
-                Session::set('name', $user['name']);
-                Session::set('id', $user['id']);
-                Session::set('role', $user['is_admin']);
+                if($userExist){
+                    $data = $userExist[0];
+                    Session::set('name', $data['name']);
+                    Session::set('id', $data['id']);
+                    Session::set('role', $data['is_admin']);
 
-                return ['status'=>1,'message'=>'登录成功']; // 登录成功
+                    return ['status'=>1,'message'=>'登录成功']; // 登录成功
+                }else{
+                    return ['status'=>0,'message'=>'登录信息有误或还未注册']; // 登录成功
+
+                }
+
             }
         }else if(Request::isGet()){
             $this->logined(); // 判断用户是否已经登录

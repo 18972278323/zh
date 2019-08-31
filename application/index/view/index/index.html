@@ -14,10 +14,10 @@
 
             <div class="content-detail" style="float: left;width: 80%">
                 <!-- 获取当前文章的id -->
-                <!--<h4><a href="{:url('Article/detail',['id'=>$art.id,'cate_id'=>$art.cate_id])}"-->
                 <h4><a href="javascript:void(0);" class="title" artId="{$art.id}" catId="{$art.cate_id}">{$art.title}</a></h4>
                 <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
                     发布时间：{$art.create_time|date='Y年m月d日'}&nbsp;&nbsp;
+                    阅读量：{$art.pv}&nbsp;&nbsp;
                 </p>
                 <div>{$art.content|getArtContent}</div>
                 <hr>
@@ -38,7 +38,6 @@
                     data :{'art_id':art_id,'time':new Date().getTime()},
                     dataType:'json',
                     success:function (data) {
-
                         // 跳转到详情页面
                         // window.location.href = "{:url('Article/detail',['id'=>"+art_id+",'cate_id'=>"+cate_id+"])}";
                         var baseUrl = "{:url('Article/detail')}";

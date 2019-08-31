@@ -56,15 +56,15 @@
                     dataType: 'json',
                     success: function (data) {
                         switch (data.status) {
-                            case 1:
+                            case 1: // 登录成功
                                 window.location.href = "{:url('index/Index/index')}";
                                 break;
-                            case -1:
+                            case -1: //验证失败
                                 alert(data.message);
                                 break;
-                            case 0:
+                            case 0: //登陆失败，信息有误
                                 alert(data.message);
-                                window.location.href = "{:url('index/User/login')}";
+                                // window.location.href = "{:url('index/User/login')}";
                                 break;
                         }
                     }

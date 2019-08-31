@@ -122,6 +122,7 @@ class Article extends Base
     /**
      * 获取文章详情
      * @return mixed
+     * @throws \think\Exception
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
@@ -132,17 +133,25 @@ class Article extends Base
         $criteria = [];
         $criteria['art_id'] = $artId;
 
-        // 查询文章详
+        // 查询文章详情并分配
         $art = ArticleModel::get($artId);
         if($art){
             $this->view->assign('art',$art);
         }
 
-        // 默认向页面分配未收藏的变量
+        // 查询文章的收藏和点赞量
+        $criteria['status'] = 1;
+        $countFav = Db::table('zh_user_fav')->where($criteria)->count();
+        $this->view->assign('countFav', $countFav);
+
+        $countLike = Db::table('zh_user_like')->where($criteria)->count();
+        $this->view->assign('countLike', $countLike);
+
+        // 默认向页面分配是否收藏的变量
         $this->view->assign('is_fav',0);
         $this->view->assign('is_like',0);
 
-        // 如果用户登录，查询该文章是否被该用户收藏, 覆盖以上变量分配
+        // 如果用户登录，查询该文章是否被该用户收藏或点赞, 覆盖以上变量分配
         $userId = Session::get('id');
         if($userId){
             $criteria['user_id'] = $userId;
@@ -194,8 +203,14 @@ class Article extends Base
                     'status'    => 1,
                 ]);
 
+                // 查询更新后的收藏量
+                $countFav = Db::table('zh_user_fav')
+                    ->where('art_id','=',$res['artId'])
+                    ->where('status','=',1)
+                    ->count();
+
                 if($info){
-                    return ['status'=>1,'message'=>'已收藏'];
+                    return ['status'=>1,'message'=>'收藏 | '.$countFav];
                 }
             }elseif ($fav['status'] === 0){   // 记录存在但未收藏，改为收藏
                 $info = Db::table('zh_user_fav')->where([
@@ -205,8 +220,14 @@ class Article extends Base
                     'status'    => 1,
                 ]);
 
+                // 查询更新后的收藏量
+                $countFav = Db::table('zh_user_fav')
+                    ->where('art_id','=',$res['artId'])
+                    ->where('status','=',1)
+                    ->count();
+
                 if($info){
-                    return ['status'=>1,'message'=>'已收藏'];
+                    return ['status'=>1,'message'=>'收藏 | '.$countFav];
                 }
             }else{ // 记录存在，已经收藏，改为未收藏
                 $info = Db::table('zh_user_fav')->where([
@@ -216,8 +237,14 @@ class Article extends Base
                     'status'    => 0,
                 ]);
 
+                // 查询更新后的收藏量
+                $countFav = Db::table('zh_user_fav')
+                    ->where('art_id','=',$res['artId'])
+                    ->where('status','=',1)
+                    ->count();
+
                 if($info){
-                    return ['status'=>0,'message'=>'收藏'];
+                    return ['status'=>0,'message'=>'收藏 | '.$countFav];
                 }
             }
         }else{
@@ -247,20 +274,35 @@ class Article extends Base
                 $res['status'] = 1;
                 $info = Db::table('zh_user_like')->insert($res);
 
+                $countLike = Db::table('zh_user_like')->where([
+                    'art_id'    => $res['art_id'],
+                    'status'    => 1,
+                ])->count();
+
                 if($info){
-                    return ['status'=>1,'message'=>'已赞'];
+                    return ['status'=>1,'message'=>'赞 | '.$countLike];
                 }
             }elseif ($like['status'] === 0){  // 点赞记录存在，但是未赞
                 $info = Db::table('zh_user_like')->where($res)->update(['status'=>1]);
 
+                $countLike = Db::table('zh_user_like')->where([
+                    'art_id'    => $res['art_id'],
+                    'status'    => 1,
+                ])->count();
+
                 if($info){
-                    return ['status'=>1,'message'=>'已赞'];
+                    return ['status'=>1,'message'=>'赞 | '.$countLike];
                 }
             }elseif ($like['status'] === 1){
                 $info = Db::table('zh_user_like')->where($res)->update(['status'=>0]);
 
+                $countLike = Db::table('zh_user_like')->where([
+                    'art_id'    => $res['art_id'],
+                    'status'    => 1,
+                ])->count();
+
                 if($info){
-                    return ['status'=>0,'message'=>'取消赞'];
+                    return ['status'=>0,'message'=>'赞 | '.$countLike];
                 }
             }
         }else{
@@ -269,6 +311,11 @@ class Article extends Base
     }
 
 
+    /**
+     * 修改访问量
+     * @return bool
+     * @throws \think\Exception
+     */
     public function pv(){
         $artId = Request::param('art_id');  // art_id
 

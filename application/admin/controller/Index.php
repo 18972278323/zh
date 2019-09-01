@@ -16,6 +16,6 @@ class Index extends Base
         // 判断是否登录
         $this->isLogin();
 
-        return $this->view->fetch('index',['title'=>'后台主页']);
+        return $this->view->fetch('index/index',['title'=>'后台主页']);
     }
 }

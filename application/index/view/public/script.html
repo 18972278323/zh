@@ -1,40 +1,30 @@
 <script>
-
-    // 我的信息
     $(function () {
+        // 我的信息
         $('#myInfo').on('click',function () {
-            var id = $(this).attr('userId');
             var url = "{:url('User/info')}";
-            url = url.substring(0, url.length - 5)+"/id/"+id+"/active/1.html";
+            url = url.substring(0, url.length - 5)+"/active/1.html";
             window.location.href = url;
         })
-    })
 
-    // 修改密码
-    $(function () {
+        // 修改密码
         $('#editPwd').on('click',function () {
             var url = "{:url('User/editPassword')}";
             url = url.substring(0, url.length - 5)+"/active/2.html";
             window.location.href = url;
         })
-    })
 
-    // 我的文章
-    $(function () {
+        // 我的文章
         $('#myArt').on('click',function () {
-            var id = $(this).attr('userId');
             var url = "{:url('Article/myArt')}";
-            url = url.substring(0, url.length - 5)+"/id/"+id+"/active/3.html";
+            url = url.substring(0, url.length - 5)+"/active/3.html";
             window.location.href = url;
         })
-    })
 
-    // 我的收藏
-    $(function () {
+        // 我的收藏
         $('#myFav').on('click',function () {
-            var id = $(this).attr('userId');
             var url = "{:url('Article/myFav')}";
-            url = url.substring(0, url.length - 5)+"/id/"+id+"/active/4.html";
+            url = url.substring(0, url.length - 5)+"/active/4.html";
             window.location.href = url;
         })
     })

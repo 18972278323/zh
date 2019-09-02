@@ -2,29 +2,29 @@
     <div class="col-md-2">
         <div style="height: 50px"></div>
         <div class="list-group">
-            {eq name="$Request.param.active" value="1"}
-            <button type="button" id="myInfo" userId="{$Think.session.id}" class="active list-group-item">个人信息</button>
-            <button type="button" id="editPwd" userId="{$Think.session.id}" class="list-group-item">修改密码</button>
-            <button type="button" id="myArt" userId="{$Think.session.id}" class="list-group-item">我的文章</button>
-            <button type="button" id="myFav" userId="{$Think.session.id}" class="list-group-item">我的收藏</button>
-            {/eq}
+            {notin name="$Request.param.active" value="2,3,4"}
+            <button type="button" id="myInfo" class="active list-group-item">个人信息</button>
+            <button type="button" id="editPwd" class="list-group-item">修改密码</button>
+            <button type="button" id="myArt" class="list-group-item">我的文章</button>
+            <button type="button" id="myFav" class="list-group-item">我的收藏</button>
+            {/notin}
             {eq name="$Request.param.active" value="2"}
-            <button type="button" id="myInfo" userId="{$Think.session.id}" class="list-group-item">个人信息</button>
-            <button type="button" id="editPwd" userId="{$Think.session.id}" class="active list-group-item">修改密码</button>
-            <button type="button" id="myArt" userId="{$Think.session.id}" class="list-group-item">我的文章</button>
-            <button type="button" id="myFav" userId="{$Think.session.id}" class="list-group-item">我的收藏</button>
+            <button type="button" id="myInfo" class="list-group-item">个人信息</button>
+            <button type="button" id="editPwd" class="active list-group-item">修改密码</button>
+            <button type="button" id="myArt" class="list-group-item">我的文章</button>
+            <button type="button" id="myFav" class="list-group-item">我的收藏</button>
             {/eq}
             {eq name="$Request.param.active" value="3"}
-            <button type="button" id="myInfo" userId="{$Think.session.id}" class="list-group-item">个人信息</button>
-            <button type="button" id="editPwd" userId="{$Think.session.id}" class="list-group-item">修改密码</button>
-            <button type="button" id="myArt" userId="{$Think.session.id}" class="active list-group-item">我的文章</button>
-            <button type="button" id="myFav" userId="{$Think.session.id}" class="list-group-item">我的收藏</button>
+            <button type="button" id="myInfo" class="list-group-item">个人信息</button>
+            <button type="button" id="editPwd" class="list-group-item">修改密码</button>
+            <button type="button" id="myArt" class="active list-group-item">我的文章</button>
+            <button type="button" id="myFav" class="list-group-item">我的收藏</button>
             {/eq}
             {eq name="$Request.param.active" value="4"}
-            <button type="button" id="myInfo" userId="{$Think.session.id}" class="list-group-item">个人信息</button>
-            <button type="button" id="editPwd" userId="{$Think.session.id}" class="list-group-item">修改密码</button>
-            <button type="button" id="myArt" userId="{$Think.session.id}" class="list-group-item">我的文章</button>
-            <button type="button" id="myFav" userId="{$Think.session.id}" class="active list-group-item">我的收藏</button>
+            <button type="button" id="myInfo" class="list-group-item">个人信息</button>
+            <button type="button" id="editPwd" class="list-group-item">修改密码</button>
+            <button type="button" id="myArt" class="list-group-item">我的文章</button>
+            <button type="button" id="myFav" class="active list-group-item">我的收藏</button>
             {/eq}
         </div>
     </div>

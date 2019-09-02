@@ -329,7 +329,7 @@ class Article extends Base
     public function myArt(){
         $this->isLogin();
 
-        $userId = Request::param('id');
+        $userId = Session::get('id');
 
         $res = Db::table('zh_article')
             ->where('user_id','=',$userId)
@@ -363,7 +363,7 @@ class Article extends Base
     public function myFav(){
         $this->isLogin();
 
-        $userId = Request::param('id');
+        $userId = Session::get('id');
         $sql = "select art.*  from zh_article art , zh_user_fav fav where art.id = fav.art_id and fav.status = 1 and fav.user_id = '$userId' ";
         $artList = Db::query($sql);
 

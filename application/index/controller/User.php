@@ -72,7 +72,7 @@ class User extends Base
             }else{
 
                 $username = $data['username'];
-                $password = $data['password'];
+                $password = md5($data['password']);
 
                 $sql = "SELECT * FROM `zh_user` WHERE (`email` = '$username' OR
                     `mobile` = '$username') AND `password` = '$password'  AND `status` = 1  LIMIT 1;";
@@ -120,29 +120,93 @@ class User extends Base
     public function info(){
         $this->isLogin();
 
-        if(Request::isGet()){
-            $id = Session::get('id');
-            $user = UserModel::get($id);
-            $this->assign('user',$user);
-            return $this->view->fetch('info',['title'=>'详细信息']);
-        }else if(Request::isAjax()){
-            $id = Request::param('id');
-            $user = UserModel::get($id);
-            $this->assign('user',$user);
-            return $this->view->fetch('info_insert');
-        }
+        $id = Session::get('id');
+        $user = UserModel::get($id);
+        $this->assign('user',$user);
+        return $this->view->fetch('info',['title'=>'详细信息']);
     }
 
     /**
      * 修改密码
      */
     public function editPassword(){
+        $this->isLogin();
+
         if(Request::isGet()){
             return $this->view->fetch('editPassword');
+
         }elseif (Request::isAjax()){
+            $data = Request::param();
+            $rule = [
+                'password_input|旧密码'  => 'require',
+                'password|新密码'  => 'require|chsAlphaNum|confirm',
+            ];
+            $res = $this->validate($data,$rule);
+
+            if($res !== true){  //验证失败 -1
+                return ['status'=>-1,'message'=>$res];
+            }else{ // 验证成功
+                $id = Session::get('id');
+                $passwordInput = md5($data['password_input']);
+//                halt($passwordInput);
+                $passwordNew = md5($data['password']);
+//                halt($passwordNew);
+
+                // 判断原密码是否正确
+                $user = UserModel::get($id);
+                $passwordOld = $user['password'];
+                halt($passwordOld);    // 14e1b600b1fd579f47433b88e8d85291
+
+                if ($passwordOld == $passwordNew){
+                    return ['status'=>-1,'message'=>'新密码不可与原密码相同，请重试'];
+                }
+
+                if($passwordInput != $passwordOld){  // 密码输入错误
+                    return ['status'=>-1,'message'=>'原密码输入错误，请重试'];
+                }else{
+                    // 修改密码
+                    $res = UserModel::update([
+                        'id' => $id,
+                        'password' => $passwordNew,
+                    ]);
+
+                    if($res){
+                        return ['status'=>1,'message'=>'密码修改成功'];
+                    }else{
+                        return ['status'=>0,'message'=>'密码修改失败'];
+                    }
+                }
+
+            }
 
         }
     }
 
+    /**
+     * 更细用户信息
+     */
+    public function update(){
+        $data = Request::param();
+        $rule = [
+            'name|姓名'   => 'require',
+            'sex|性别'    => 'require',
+            'mobile|手机号码'      => 'require|mobile',
+            'email|邮箱'  => 'require|email',
+            'birthday|生日'    => 'require',
+        ];
+
+        $res = $this->validate($data,$rule);
+        if($res !== true){  //验证失败 -1
+            return ['status'=>-1,'message'=>$res];
+        }else{ // 验证成功 1
+            $res = UserModel::update($data);
+
+            if($res){
+                return ['status'=>1,'message'=>'更新成功'];
+            }else{
+                return ['status'=>0,'message'=>'更新失败'];
+            }
+        }
+    }
 
 }

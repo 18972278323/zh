@@ -23,4 +23,9 @@ class User extends Model
     protected $insert = ['status'=>1,'is_admin'=>0];
     // 修改自动完成
 
+    // 修改器修改密码
+    protected function setPasswordAttr($value){
+        return md5($value);
+    }
+
 }

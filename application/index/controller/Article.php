@@ -322,4 +322,66 @@ class Article extends Base
         $res = ArticleModel::where('id','=',$artId)->setInc('pv');
         return true;
     }
+
+    /**
+     * 获取登陆用户添加的文章
+     */
+    public function myArt(){
+        $this->isLogin();
+
+        $userId = Request::param('id');
+
+        $res = Db::table('zh_article')
+            ->where('user_id','=',$userId)
+            ->order('create_time','desc')
+            ->paginate(3);
+        $artList = $res->toArray()['data'];
+
+
+        // 查询文章的收藏和点赞量
+        foreach ($artList as $key => &$value){
+            $criteria = [];
+            $criteria['art_id'] = $value['id'];
+
+            $criteria['status'] = 1;
+            $countFav = Db::table('zh_user_fav')->where($criteria)->count();
+            $value['countFav'] = $countFav;
+
+            $countLike = Db::table('zh_user_like')->where($criteria)->count();
+            $value['countLike'] = $countLike;
+        }
+//        halt($artList);
+
+        $this->assign('artList',$artList);
+        $this->assign('res',$res);
+        return $this->view->fetch('myArt');
+//        return ['status'=>1,'message'=>'成功','content'=>$content];
+    }
+
+
+
+    public function myFav(){
+        $this->isLogin();
+
+        $userId = Request::param('id');
+        $sql = "select art.*  from zh_article art , zh_user_fav fav where art.id = fav.art_id and fav.status = 1 and fav.user_id = '$userId' ";
+        $artList = Db::query($sql);
+
+
+        // 查询文章的收藏和点赞量
+        foreach ($artList as $key => &$value){
+            $criteria = [];
+            $criteria['art_id'] = $value['id'];
+
+            $criteria['status'] = 1;
+            $countFav = Db::table('zh_user_fav')->where($criteria)->count();
+            $value['countFav'] = $countFav;
+
+            $countLike = Db::table('zh_user_like')->where($criteria)->count();
+            $value['countLike'] = $countLike;
+        }
+
+        $this->assign('artList',$artList);
+        return   $this->view->fetch('myFav');
+    }
 }

@@ -20,7 +20,7 @@ class User extends Model
     // protected $dataFormat = 'Y年m月d日';
 
     // 新增自动完成
-    protected $insert = ['status'=>1];
+    protected $insert = ['status'=>1,'is_admin'=>0];
     // 修改自动完成
 
 }

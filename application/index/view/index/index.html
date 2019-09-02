@@ -39,7 +39,6 @@
                     dataType:'json',
                     success:function (data) {
                         // 跳转到详情页面
-                        // window.location.href = "{:url('Article/detail',['id'=>"+art_id+",'cate_id'=>"+cate_id+"])}";
                         var baseUrl = "{:url('Article/detail')}";
                         baseUrl = baseUrl.substr(0,baseUrl.length-5);
                         window.location.href = baseUrl+"/id/"+art_id+"/cate_id/"+cate_id+".html";

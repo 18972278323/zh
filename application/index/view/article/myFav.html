@@ -1,0 +1,31 @@
+{extend name="public/base2" /}
+
+{block name="body"}
+
+    <div class="col-md-9" >
+        <div class="page-header">
+            <p>
+                <span style="font-size: 16px;color: #8f8f8f">个人中心 > 我的收藏</span>&nbsp;&nbsp;
+            </p>
+        </div>
+
+        {volist name="artList" id="art" empty="当前暂无文章"}
+        <div>
+            <img class="img-rounded" src="/uploads/{$art.title_img}"
+                 style="margin-right: 10px;float: left;width: 100px;height: 85px"/>
+
+            <div class="content-detail" style="float: left;width: 80%">
+                <!-- 获取当前文章的id -->
+                <h4><a href="javascript:void(0);" class="title" artId="{$art.id}" catId="{$art.cate_id}">{$art.title}</a></h4>
+                <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
+                    发布时间：{$art.create_time|date='Y年m月d日'}&nbsp;&nbsp;
+                    阅读量：{$art.pv}&nbsp;&nbsp;
+                </p>
+                <div>{$art.content|getArtContent}</div>
+                <hr>
+            </div>
+        </div>
+        {/volist}
+    </div>
+
+    {/block}

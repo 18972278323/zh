@@ -7,7 +7,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{:url('index/Article/getArtList')}">{$siteName|default='社区问答'}</a>
+            <a class="navbar-brand" href="{:url('index/Article/getArtList')}">{$siteName|default='CIGAR'}</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -42,11 +42,11 @@
                     <li><a href="{:url('User/login')}">登录</a></li>
                     <li><a href="{:url('Article/insert')}">发布文章</a></li>
                 {else /}
-                    <li><a href="">{$Think.session.name}</a></li>
+                    <li><a href="javascript:;">{$Think.session.name}&nbsp;&nbsp;<span class="badge">2</span></a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">操作<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{:url('User/info')}">用户信息</a></li>
+                            <li><a href="{:url('User/info')}">个人中心</a></li>
                             <li><a href="{:url('Article/insert')}">发布文章</a></li>
                             <li><a href="{:url('User/logout')}">退出登录</a></li>
                         </ul>

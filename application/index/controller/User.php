@@ -10,6 +10,7 @@ use app\common\model\User as UserModel;
 use think\facade\Session;
 use think\Db;
 
+
 class User extends Base
 {
     /**
@@ -111,4 +112,37 @@ class User extends Base
 
         return $this->redirect(url('index/Index/index'));
     }
+
+
+    /**
+     * 获取用户信息
+     */
+    public function info(){
+        $this->isLogin();
+
+        if(Request::isGet()){
+            $id = Session::get('id');
+            $user = UserModel::get($id);
+            $this->assign('user',$user);
+            return $this->view->fetch('info',['title'=>'详细信息']);
+        }else if(Request::isAjax()){
+            $id = Request::param('id');
+            $user = UserModel::get($id);
+            $this->assign('user',$user);
+            return $this->view->fetch('info_insert');
+        }
+    }
+
+    /**
+     * 修改密码
+     */
+    public function editPassword(){
+        if(Request::isGet()){
+            return $this->view->fetch('editPassword');
+        }elseif (Request::isAjax()){
+
+        }
+    }
+
+
 }

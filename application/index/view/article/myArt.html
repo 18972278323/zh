@@ -1,0 +1,50 @@
+{extend name="public/base2" /}
+
+{block name="body"}
+
+<!--<div class="row">-->
+    <!--<div class="col-md-2">-->
+        <!--<div style="height: 50px"></div>-->
+        <!--<div class="list-group">-->
+            <!--<button type="button" id="myInfo" userId="{$Think.session.id}" class="list-group-item">个人信息</button>-->
+            <!--<button type="button" id="myArt" userId="{$Think.session.id}" class="active list-group-item">我的文章</button>-->
+            <!--<button type="button" id="myFav" userId="{$Think.session.id}" class="list-group-item">我的收藏</button>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-md-1"></div>-->
+    <div class="col-md-9" >
+        <div class="page-header">
+            <p>
+                <span style="font-size: 16px;color: #8f8f8f">个人中心 > 我的文章</span>&nbsp;&nbsp;
+            </p>
+        </div>
+        {volist name="artList" id="art" empty="当前暂无文章"}
+        <div>
+            <img class="img-rounded" src="/uploads/{$art.title_img}"
+                 style="margin-right: 10px;float: left;width: 100px;height: 85px"/>
+
+            <div class="content-detail" style="float: left;width: 80%">
+                <!-- 获取当前文章的id -->
+                <span style="font-size: 18px; " ><a href="javascript:void(0);" class="title" artId="{$art.id}" catId="{$art.cate_id}">{$art.title}</a></span>
+                {if condition=" $art.status == 1 "}
+                    &nbsp;&nbsp;<span class="label label-success" >正常</span>
+                {else /}
+                    &nbsp;&nbsp;<span class="label label-danger" title="驳回原因">被驳回</span>
+                {/if}
+                <div style="height: 6px"></div>
+                <p>
+                    阅读量：{$art.pv}&nbsp;&nbsp;
+                    收藏量：{$art.countFav}&nbsp;&nbsp;
+                    点赞量：{$art.countLike}&nbsp;&nbsp;
+                </p>
+                <div>{$art.content|getArtContent}</div>
+                <hr>
+            </div>
+        </div>
+        {/volist}
+        <div class="text-center">{$res|raw}</div>
+    </div>
+</div>
+
+
+{/block}

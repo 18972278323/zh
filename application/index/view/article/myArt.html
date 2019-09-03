@@ -2,16 +2,6 @@
 
 {block name="body"}
 
-<!--<div class="row">-->
-    <!--<div class="col-md-2">-->
-        <!--<div style="height: 50px"></div>-->
-        <!--<div class="list-group">-->
-            <!--<button type="button" id="myInfo" userId="{$Think.session.id}" class="list-group-item">个人信息</button>-->
-            <!--<button type="button" id="myArt" userId="{$Think.session.id}" class="active list-group-item">我的文章</button>-->
-            <!--<button type="button" id="myFav" userId="{$Think.session.id}" class="list-group-item">我的收藏</button>-->
-        <!--</div>-->
-    <!--</div>-->
-    <!--<div class="col-md-1"></div>-->
     <div class="col-md-9" >
         <div class="page-header">
             <p>
@@ -25,7 +15,7 @@
 
             <div class="content-detail" style="float: left;width: 80%">
                 <!-- 获取当前文章的id -->
-                <span style="font-size: 18px; " ><a href="javascript:void(0);" class="title" artId="{$art.id}" catId="{$art.cate_id}">{$art.title}</a></span>
+                <span style="font-size: 18px; " ><a href="javascript:void(0);" class="title" artId="{$art.id}">{$art.title}</a></span>
                 {if condition=" $art.status == 1 "}
                     &nbsp;&nbsp;<span class="label label-success" >正常</span>
                 {else /}
@@ -46,5 +36,16 @@
     </div>
 </div>
 
+<script>
+    $(function () {
+        // 文章详情
+        $('.title').on('click',function () {
+            var id = $(this).attr('artId');
+            var url = "{:url('Article/detail')}";
+            url = url.substring(0, url.length - 5)+"/id/"+id+"/active/3/page/detail_art.html";
+            window.location.href = url;
+        })
+    })
+</script>
 
 {/block}

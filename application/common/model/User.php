@@ -24,8 +24,8 @@ class User extends Model
     // 修改自动完成
 
     // 修改器修改密码
-    protected function setPasswordAttr($value){
-        return md5($value);
-    }
+//    protected function setPasswordAttr($value){
+//        return md5($value);
+//    }
 
 }

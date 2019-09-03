@@ -40,6 +40,9 @@ class User extends Base
             if($res !== true){
                 return ['status'=>-1,'message'=>$res];
             }else{
+                // 对密码进行加密
+                $data['password'] = md5($data['password']);
+
                 // 执行信息保存
                 $res = UserModel::create($data);
                 if($res){ // ajax提交,默认返回json数据格式
@@ -132,10 +135,10 @@ class User extends Base
     public function editPassword(){
         $this->isLogin();
 
-        if(Request::isGet()){
+        if(Request::isGet()){  // 直接跳转页面
             return $this->view->fetch('editPassword');
 
-        }elseif (Request::isAjax()){
+        }elseif (Request::isAjax()){  // 处理提交的修改数据
             $data = Request::param();
             $rule = [
                 'password_input|旧密码'  => 'require',
@@ -148,14 +151,11 @@ class User extends Base
             }else{ // 验证成功
                 $id = Session::get('id');
                 $passwordInput = md5($data['password_input']);
-//                halt($passwordInput);
                 $passwordNew = md5($data['password']);
-//                halt($passwordNew);
 
                 // 判断原密码是否正确
                 $user = UserModel::get($id);
                 $passwordOld = $user['password'];
-                halt($passwordOld);    // 14e1b600b1fd579f47433b88e8d85291
 
                 if ($passwordOld == $passwordNew){
                     return ['status'=>-1,'message'=>'新密码不可与原密码相同，请重试'];
@@ -165,13 +165,14 @@ class User extends Base
                     return ['status'=>-1,'message'=>'原密码输入错误，请重试'];
                 }else{
                     // 修改密码
-                    $res = UserModel::update([
+                    $updateCri = [
                         'id' => $id,
                         'password' => $passwordNew,
-                    ]);
+                    ];
 
+                    $res = UserModel::update($updateCri);
                     if($res){
-                        return ['status'=>1,'message'=>'密码修改成功'];
+                        return ['status'=>1,'message'=>'密码修改成功，点击确定将退出重新登录'];
                     }else{
                         return ['status'=>0,'message'=>'密码修改失败'];
                     }
@@ -180,6 +181,7 @@ class User extends Base
             }
 
         }
+
     }
 
     /**

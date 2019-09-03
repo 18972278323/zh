@@ -122,10 +122,6 @@ class Article extends Base
     /**
      * 获取文章详情
      * @return mixed
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
      */
     public function detail(){
         $artId = Request::param('id');
@@ -173,7 +169,11 @@ class Article extends Base
         }
 
         $this->view->assign('title', '文章详情');
-        return $this->fetch();
+        $page = Request::param('page');
+        if($page){  // 如果指定了要返回的页面
+            return $this->view->fetch($page);
+        }
+        return $this->view->fetch();
     }
 
 
@@ -350,21 +350,23 @@ class Article extends Base
             $countLike = Db::table('zh_user_like')->where($criteria)->count();
             $value['countLike'] = $countLike;
         }
-//        halt($artList);
 
         $this->assign('artList',$artList);
         $this->assign('res',$res);
         return $this->view->fetch('myArt');
-//        return ['status'=>1,'message'=>'成功','content'=>$content];
     }
 
 
-
+    /**
+     * 我的收藏列表
+     * @return string
+     * @throws \think\Exception
+     */
     public function myFav(){
         $this->isLogin();
 
         $userId = Session::get('id');
-        $sql = "select art.*  from zh_article art , zh_user_fav fav where art.id = fav.art_id and fav.status = 1 and fav.user_id = '$userId' ";
+        $sql = "select art.*  from zh_article art , zh_user_fav fav where art.id = fav.art_id and fav.status = 1 and fav.user_id = '$userId' order by art.create_time desc ";
         $artList = Db::query($sql);
 
 
@@ -384,4 +386,31 @@ class Article extends Base
         $this->assign('artList',$artList);
         return   $this->view->fetch('myFav');
     }
+
+    /**
+     * 去文章编辑界面
+     * @return string
+     * @throws \think\Exception
+     */
+    public function editArt(){
+        if(Request::isGet()){
+            $this->isLogin();
+
+            $criteria = [];
+            $artId = Request::param('id');
+            $userId = Session::get('id');
+            $criteria['id'] = $artId;
+            $criteria['user_id'] = $userId;
+
+            $art = ArticleModel::get(function ($query) use ($criteria) {
+                $query->where($criteria);
+            });
+//            halt($art);
+
+            $this->view->assign('art',$art);
+            return $this->view->fetch('detail_edit');
+        }
+
+    }
+
 }

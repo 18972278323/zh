@@ -16,7 +16,7 @@
 
             <div class="content-detail" style="float: left;width: 80%">
                 <!-- 获取当前文章的id -->
-                <h4><a href="javascript:void(0);" class="title" artId="{$art.id}" catId="{$art.cate_id}">{$art.title}</a></h4>
+                <h4><a href="javascript:void(0);" class="title" id="detail" artId="{$art.id}">{$art.title}</a></h4>
                 <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
                     发布时间：{$art.create_time|date='Y年m月d日'}&nbsp;&nbsp;
                     阅读量：{$art.pv}&nbsp;&nbsp;
@@ -27,5 +27,26 @@
         </div>
         {/volist}
     </div>
+    <script>
+        $(function () {
 
+                $('.title').on('click', function () {
+                    var id = $(this).attr('artId');
+                    $.ajax({
+                        type:'post',
+                        url: "{:url('Article/pv')}",
+                        data :{'art_id':id,'time':new Date().getTime()},
+                        dataType:'json',
+                        success:function (data) {
+                            // alert(data);
+                            // 跳转到详情页面
+                            var url = "{:url('Article/detail')}";
+                            url = url.substring(0, url.length - 5)+"/id/"+id+"/active/4/page/detail_fav.html";
+                            window.location.href = url;
+                        }
+                    })
+                })
+            })
+
+    </script>
     {/block}

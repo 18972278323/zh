@@ -1,18 +1,17 @@
-{extend name="public:base1" /}
+{extend name="public:base2" /}
 {block name="body"}
 	<!-- 主体 -->
 	<div class="row">
 		<!-- 左侧8列 -->
-		<div class="col-md-10">
+		<div class="col-md-8">
 		<!-- 页头 -->
 		<div class="page-header">
-  			<h2>{$art.cate_id|getCatName}</h2>
+  			<!--<h2>{$art.cate_id|getCatName}</h2>-->
+  			<h3>文章详情</h3>
 		</div>
 
 		<div>
-
             <h4><b>{$art.title}</b></h4>
-
             <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
                 发布时间：{$art.create_time}&nbsp;&nbsp;
                 阅读量：{$art.pv}&nbsp;&nbsp;
@@ -20,6 +19,8 @@
             <div>{:htmlspecialchars_decode($art.content)}</div>
             <hr/>
 
+            <button type="button" class="btn btn-primary-outline" id="toArtList">返回列表</button>
+            <button type="button" article_id="{$art.id}" id="toEdit" class="btn btn-primary-outline"  >编辑</button>
             <button type="button"  article_id="{$art.id}" session_id="{$Think.session.id}" id="fav"
                     {eq name="is_fav" value="1"}
                         class="btn btn-success"  >收藏 | {$countFav}</button>
@@ -36,11 +37,29 @@
                         class="btn btn-default"  >赞 | {$countLike}</button>
                     {/eq}
 
+
         </div>
+        <hr/>
 
             <!--{$countFav}|{$countLike}-->
         <script>
             $(function () {
+
+                // 返回收藏列表
+                $('#toArtList').on('click',function () {
+                    var url = "{:url('Article/myArt')}";
+                    url = url.substring(0, url.length - 5)+"/active/3.html";
+                    window.location.href = url;
+                })
+
+                // 去编辑界面
+                $('#toEdit').on('click',function () {
+                    var id = $(this).attr('article_id');
+                    var url = "{:url('Article/editArt')}";
+                    url = url.substring(0, url.length - 5)+"/id/"+id+"/active/3.html";
+                    window.location.href = url;
+                })
+
 
                 // 处理点赞请求
                 $('#like').on('click',function () {
@@ -122,6 +141,7 @@
                         }
                     }
                 })
+
             })
         </script>
 

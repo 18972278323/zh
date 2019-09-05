@@ -45,18 +45,18 @@
         <script>
             $(function () {
 
-                // 返回收藏列表
-                $('#toArtList').on('click',function () {
-                    var url = "{:url('Article/myArt')}";
-                    url = url.substring(0, url.length - 5)+"/active/3.html";
-                    window.location.href = url;
-                })
-
                 // 去编辑界面
                 $('#toEdit').on('click',function () {
                     var id = $(this).attr('article_id');
                     var url = "{:url('Article/editArt')}";
                     url = url.substring(0, url.length - 5)+"/id/"+id+"/active/3.html";
+                    window.location.href = url;
+                })
+
+                // 返回列表页面
+                $('#toArtList').on('click',function () {
+                    var url = "{:url('Article/myArt')}";
+                    url = url.substring(0, url.length - 5)+"/active/3.html";
                     window.location.href = url;
                 })
 

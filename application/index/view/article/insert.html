@@ -41,7 +41,9 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">文章内容</label>
                 <div class="col-sm-10">
-                    <textarea name="content" id="content" style="height: 200px" class="form-control"></textarea>
+                    <!--<textarea name="content" id="content" style="height: 200px" class="form-control"></textarea>-->
+                    <textarea name="content" style="width:700px;height:200px;visibility:hidden;"><?php echo htmlspecialchars($htmlData); ?></textarea>
+                    <br />
                 </div>
             </div>
 
@@ -56,6 +58,29 @@
     <script type="text/javascript">
         bkLib.onDomLoaded(function() {
             new nicEditor({iconsPath : '/static/js/nicEditorIcons.gif'}).panelInstance('content');
+        });
+
+    </script>
+    <script>
+        KindEditor.ready(function(K) {
+            var editor1 = K.create('textarea[name="content"]', {
+                cssPath : '../plugins/code/prettify.css',
+                uploadJson : '../php/upload_json.php',
+                fileManagerJson : '../php/file_manager_json.php',
+                allowFileManager : true,
+                afterCreate : function() {
+                    var self = this;
+                    K.ctrl(document, 13, function() {
+                        self.sync();
+                        K('form[name=example]')[0].submit();
+                    });
+                    K.ctrl(self.edit.doc, 13, function() {
+                        self.sync();
+                        K('form[name=example]')[0].submit();
+                    });
+                }
+            });
+            prettyPrint();
         });
     </script>
 

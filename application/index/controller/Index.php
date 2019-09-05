@@ -18,7 +18,7 @@ class Index extends Base
         $article = new Article();
         $article->getArtList();
 
-        $this->view->assign('title','首页');
+        $this->view->assign('title','网站首页');
         return $this->view->fetch();
     }
 

@@ -37,6 +37,7 @@ class Article extends Base
             }
 
             return $this->view->fetch();
+
         }else if(Request::isPost()){ // 保存数据
             $data = (Request::post());
             $articleRule = "app\\common\\validate\\ArticleVal";
@@ -59,13 +60,13 @@ class Article extends Base
                         $this->error('文件上传失败');
                     }
 
-                    // 保存信息
-                    $saveRes = ArticleModel::create($data);
-                    if($saveRes){
-                        $this->redirect(url('Index/index'));
-                    }else{
-                        $this->error('文章发布失败');
-                    }
+                }
+                // 保存信息
+                $saveRes = ArticleModel::create($data);
+                if($saveRes){
+                    $this->redirect(url('Index/index'));
+                }else{
+                    $this->error('文章发布失败');
                 }
             }
         }
@@ -408,7 +409,44 @@ class Article extends Base
 //            halt($art);
 
             $this->view->assign('art',$art);
-            return $this->view->fetch('detail_edit');
+            return $this->view->fetch('detail_edit',['title'=>'编辑文章']);
+        }elseif (Request::isAjax()){
+            // 获取基本信息
+            $data = Request::param();
+            $rule = [
+                'title|文章标题'         => 'require',
+                'cate_id|文章分类'       => 'require',
+                'content|文章内容'       => 'require',
+            ];
+
+            $valRes = $this->validate($data,$rule);
+            if($valRes !== true ){
+                return ['status'=>0,'message'=>$valRes];
+            }
+
+            // 处理文件上传
+            $file = Request::file('');
+            if($file){  // 说明有文件上传
+                $img = $file['title_img'];
+                $uploadRes = $img->validate([
+                    'ext' => ['jpg','jpeg','gif','png'],
+                    'size'=> 5000000,
+                ])->move('uploads');
+
+                if($uploadRes){
+                    $data['title_img'] = $uploadRes->getSaveName();
+                }else{
+                    $messege = $img->getError();
+                    return ['status'=>0,'message'=>$messege];
+                }
+            }
+
+            $res = ArticleModel::update($data);
+            if($res){
+                return ['status'=>1,'message'=>'修改成功'];
+            }else{
+                return ['status'=>0,'message'=>'文件上传成功，但是文章保存失败'];
+            }
         }
 
     }

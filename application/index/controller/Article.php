@@ -422,6 +422,7 @@ class Article extends Base
             $valRes = $this->validate($data,$rule);
             if($valRes !== true ){
                 return ['status'=>0,'message'=>$valRes];
+
             }
 
             // 处理文件上传

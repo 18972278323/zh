@@ -27,7 +27,7 @@
                     收藏量：{$art.countFav}&nbsp;&nbsp;
                     点赞量：{$art.countLike}&nbsp;&nbsp;
                 </p>
-                <div>{$art.content|getArtContent}</div>
+                <div>{$art.content|getArtContent|htmlspecialchars_decode}</div>
                 <hr>
             </div>
         </div>

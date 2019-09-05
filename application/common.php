@@ -19,7 +19,7 @@ if(!function_exists('getUserName')){
 if(!function_exists('getArtContent')){
     function getArtContent($content)
     {   if(strlen($content)<30){
-            return $content;
+            return strip_tags($content);
         }
         return mb_substr(strip_tags($content),0,30).' ...';
     }

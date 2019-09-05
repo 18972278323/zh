@@ -5,7 +5,7 @@
     <div class="col-md-8">
         <div class="page-header">
             <p>
-                <span style="font-size: 24px">编辑文章</span>&nbsp;&nbsp;
+                <span style="font-size: 16px;color: #8f8f8f">个人中心 > 我的文章 > 文章编辑</span>&nbsp;&nbsp;
             </p>
         </div>
 
@@ -49,7 +49,7 @@
                 <label class="col-sm-2 control-label">文章内容</label>
                 <div class="col-sm-10">
                     <!--<textarea name="content" id="content" style="height: 200px" class="form-control">{$art.content}</textarea>-->
-                    <textarea name="content" style="width:700px;height:300px;visibility:hidden;">{$art.content}</textarea>
+                    <textarea name="content" id="content" style="width:700px;height:300px;visibility:hidden;">{$art.content}</textarea>
                 </div>
             </div>
 
@@ -79,50 +79,22 @@
                 editor = K.create('textarea[name="content"]', {
                     allowFileManager : true
                 });
-                K('input[name=getHtml]').click(function(e) {
-                    alert(editor.html());
-                });
-                K('input[name=isEmpty]').click(function(e) {
-                    alert(editor.isEmpty());
-                });
-                K('input[name=getText]').click(function(e) {
-                    alert(editor.text());
-                });
-                K('input[name=selectedHtml]').click(function(e) {
-                    alert(editor.selectedHtml());
-                });
-                K('input[name=setHtml]').click(function(e) {
-                    editor.html('<h3>Hello KindEditor</h3>');
-                });
-                K('input[name=setText]').click(function(e) {
-                    editor.text('<h3>Hello KindEditor</h3>');
-                });
-                K('input[name=insertHtml]').click(function(e) {
-                    editor.insertHtml('<strong>插入HTML</strong>');
-                });
-                K('input[name=appendHtml]').click(function(e) {
-                    editor.appendHtml('<strong>添加HTML</strong>');
-                });
-                K('input[name=clear]').click(function(e) {
-                    editor.html('');
-                });
             });
 
             // 提交更新
             $('#update').on('click',function () {
-                alert(editor.html());
-
+                editor.sync();  // 将富文本内容绑定到表单
                 var form = new FormData(document.getElementById("edit"));
-                console.log(form);
                 $.ajax({
                     url:"{:url('Article/editArt')}",
                     type:"post",
-                    data:{form,'content':editor.html()},
+                    // data:{form,'content':editor.html()},
+                    data:form,
                     processData:false,
                     contentType:false,
                     success:function(data){
                         if(data.status == 1){
-                            alert(data.message);
+                            // alert(data.message);
                             var url = "{:url('Article/myArt')}";
                             url = url.substring(0, url.length - 5)+"/active/3.html";
                             window.location.href = url;
@@ -131,7 +103,7 @@
                         }
                     },
                     error:function(e){
-                        alert("错误！！");
+                        alert("糟糕，出现错误！！");
                     }
                 });
             })

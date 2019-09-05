@@ -115,6 +115,7 @@ class Article extends Base
 
             $this->view->assign('artList', $artList);
             $this->view->assign('title', '首页');
+            $this->view->assign('empty','当前暂没有数据');
             return $this->view->fetch('index/index');
 
         }

@@ -18,8 +18,12 @@
                 <span style="font-size: 18px; " ><a href="javascript:void(0);" class="title" artId="{$art.id}">{$art.title}</a></span>
                 {if condition=" $art.status == 1 "}
                     &nbsp;&nbsp;<span class="label label-success" >正常</span>
-                {else /}
-                    &nbsp;&nbsp;<span class="label label-danger" title="驳回原因">被驳回</span>
+                {elseif condition=" $art.status == -1 " /}
+                    &nbsp;&nbsp;<span class="label label-danger" title="被举报，欲正常显示需要修改后重新提交，审核通过后方可显示">被驳回</span>
+                {elseif condition=" $art.status == -2 " /}
+                    &nbsp;&nbsp;<span class="label label-info" title="等待管理员审核后方可上线">待审核</span>
+                {elseif condition=" $art.status == 0 " /}
+                    &nbsp;&nbsp;<span class="label label-warning" title="已被作者删除">已删除</span>
                 {/if}
                 <div style="height: 6px"></div>
                 <p>

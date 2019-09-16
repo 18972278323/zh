@@ -12,6 +12,7 @@ namespace app\index\controller;
 use app\common\controller\Base;
 use app\common\model\ArticleCat;
 use app\common\model\Article as ArticleModel;
+use app\common\model\Comment as CommentsModel;
 use think\Db;
 use think\facade\Request;
 use think\facade\Session;
@@ -136,6 +137,15 @@ class Article extends Base
         if($art){
             $this->view->assign('art',$art);
         }
+
+        // 查询文章评论总数和评论列表
+        $commentsCount = CommentsModel::where('status', '=', '1')->count();
+        $commentsList = CommentsModel::all(function ($query) use ($artId){
+           $query->where('status','=','1')
+           ->where('art_id','=',$artId);
+        });
+        $this->view->assign('comments', $commentsList);
+        $this->view->assign('comCount', $commentsCount);
 
         // 查询文章的收藏和点赞量
         $criteria['status'] = 1;
@@ -355,7 +365,7 @@ class Article extends Base
 
         $this->assign('artList',$artList);
         $this->assign('res',$res);
-        return $this->view->fetch('myArt');
+        return $this->view->fetch('myArt',['title'=>'我的文章']);
     }
 
 
@@ -386,7 +396,7 @@ class Article extends Base
         }
 
         $this->assign('artList',$artList);
-        return   $this->view->fetch('myFav');
+        return   $this->view->fetch('myFav',['title'=>'我的收藏']);
     }
 
     /**
@@ -407,7 +417,6 @@ class Article extends Base
             $art = ArticleModel::get(function ($query) use ($criteria) {
                 $query->where($criteria);
             });
-//            halt($art);
 
             $this->view->assign('art',$art);
             return $this->view->fetch('detail_edit',['title'=>'编辑文章']);
@@ -449,6 +458,69 @@ class Article extends Base
             }else{
                 return ['status'=>0,'message'=>'文件上传成功，但是文章保存失败'];
             }
+        }
+
+    }
+
+    // 被驳回的文章提交审核
+    public function subCheck(){
+        // 获取基本信息
+        $data = Request::param();
+        $rule = [
+            'title|文章标题'         => 'require',
+            'cate_id|文章分类'       => 'require',
+            'content|文章内容'       => 'require',
+        ];
+
+        $valRes = $this->validate($data,$rule);
+        if($valRes !== true ){
+            return ['status'=>0,'message'=>$valRes];
+        }
+
+        // 处理文件上传
+        $file = Request::file('');
+        if($file){  // 说明有文件上传
+            $img = $file['title_img'];
+            $uploadRes = $img->validate([
+                'ext' => ['jpg','jpeg','gif','png'],
+                'size'=> 5000000,
+            ])->move('uploads');
+
+            if($uploadRes){
+                $data['title_img'] = $uploadRes->getSaveName();
+            }else{
+                $messege = $img->getError();
+                return ['status'=>0,'message'=>$messege];
+            }
+        }
+        $data['status'] = -2;  //提交审核的状态
+
+        $res = ArticleModel::update($data);
+        if($res){
+            return ['status'=>1,'message'=>'提交审核成功'];
+        }else{
+            return ['status'=>0,'message'=>'文件上传成功，但是文章保存失败'];
+        }
+    }
+
+
+    /**
+     * 修改文章状态，1正常 0删除  -1驳回  -2待审核
+     * @return array
+     */
+    public function chgStatus(){
+        $this->isLogin();
+
+        $criteria = [];
+        $criteria['id'] = Request::param('id');
+        $criteria['user_id'] = Session::get('id');
+        $criteria['status'] = Request::param('status');
+
+        $res = ArticleModel::update($criteria);
+        if($res){
+            return ['status'=>1,'message'=>'操作成功'];
+        }else{
+            return ['status'=>0,'message'=>'非法操作'];
         }
 
     }

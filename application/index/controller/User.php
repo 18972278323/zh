@@ -136,7 +136,7 @@ class User extends Base
         $this->isLogin();
 
         if(Request::isGet()){  // 直接跳转页面
-            return $this->view->fetch('editPassword');
+            return $this->view->fetch('editPassword',['title'=>'修改密码']);
 
         }elseif (Request::isAjax()){  // 处理提交的修改数据
             $data = Request::param();

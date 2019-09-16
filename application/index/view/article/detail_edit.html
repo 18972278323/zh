@@ -56,7 +56,12 @@
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button type="button" class="btn btn-primary-outline" artId="{$art.id}" id="toDetail">返回详情</button>
-                    <button type="button" class="btn btn-primary" id="update">确定修改</button>
+                    {notin name="art.status" value="-1,-2"}
+                        <button type="button" class="btn btn-primary" id="update">确定修改</button>
+                    {/notin}
+                    {in name="art.status" value="-1,-2"}
+                        <button type="button" class="btn btn-primary" id="check">提交审核</button>
+                    {/in}
                 </div>
             </div>
         </form>
@@ -88,7 +93,32 @@
                 $.ajax({
                     url:"{:url('Article/editArt')}",
                     type:"post",
-                    // data:{form,'content':editor.html()},
+                    data:form,
+                    processData:false,
+                    contentType:false,
+                    success:function(data){
+                        if(data.status == 1){
+                            // alert(data.message);
+                            var url = "{:url('Article/myArt')}";
+                            url = url.substring(0, url.length - 5)+"/active/3.html";
+                            window.location.href = url;
+                        }else {
+                            alert(data.message);
+                        }
+                    },
+                    error:function(e){
+                        alert("糟糕，出现错误！！");
+                    }
+                });
+            })
+
+            // 提交更新
+            $('#check').on('click',function () {
+                editor.sync();  // 将富文本内容绑定到表单
+                var form = new FormData(document.getElementById("edit"));
+                $.ajax({
+                    url:"{:url('Article/subCheck')}",
+                    type:"post",
                     data:form,
                     processData:false,
                     contentType:false,

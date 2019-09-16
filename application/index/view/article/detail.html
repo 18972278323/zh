@@ -6,17 +6,15 @@
 		<div class="col-md-10">
 		<!-- 页头 -->
 		<div class="page-header">
-  			<h2>{$art.cate_id|getCatName}</h2>
-		</div>
-
-		<div>
-
+  			<!--<h2>{$art.cate_id|getCatName}</h2>-->
             <h4><b>{$art.title}</b></h4>
-
             <p>作者：{$art.user_id|getUserName}&nbsp;&nbsp;
                 发布时间：{$art.create_time}&nbsp;&nbsp;
                 阅读量：{$art.pv}&nbsp;&nbsp;
             </p>
+        </div>
+
+		<div>
             <div>{:htmlspecialchars_decode($art.content)}</div>
             <hr/>
 
@@ -37,10 +35,65 @@
                     {/eq}
 
         </div>
+        <hr/>
+        <h4>发表评论：</h4>
+            <form id="comment" class="form-horizontal">
+                <input type="hidden" name="art_id" value="{$art.id}">
+                <input type="hidden" name="user_id" value="{$Think.session.id}">
+                <div>
+                    <textarea name="content" style="width: 900px;" rows="2"></textarea>
+                </div>
+                <div>
+                    <button type="button" userId="{$Think.session.id}" class="btn btn-primary" id="submit" >发表</button>
+                </div>
+            </form>
 
-            <!--{$countFav}|{$countLike}-->
+        <hr/>
+        <h4>全部评论</h4>
+        {volist name="comments" id="comment" empty="当前文章暂没有评论..."}
+            <div class="media">
+                <div class="media-left">
+                    <a href="#">
+                        <img class="media-object" style="width: 24px;height: 24px" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1568624635880&di=ac4b27e1c601a7ced908c463edcdca3d&imgtype=0&src=http%3A%2F%2Fimgq.duitang.com%2Fuploads%2Fitem%2F201503%2F29%2F20150329152357_XsHuz.jpeg" alt="图片加载中…">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <span class="media-heading">{$comment.user_id|getUserName}</span>&nbsp;&nbsp;&nbsp;
+                    <span>{$comment.create_time}</span><br>
+                    {$comment.content}
+                </div>
+            </div>
+        {/volist}
+        <br/>
+
+                <!--{$countFav}|{$countLike}-->
         <script>
             $(function () {
+                // 处理评论提交功能
+                $('#submit').on('click',function () {
+                    var userId = $(this).attr('userId');
+                    if(userId == '' || userId == null){
+                        alert('登录后方可发表评论');
+                    }else{
+                        $.ajax({
+                            type:'post',
+                            url:'{:url("Comment/add")}',
+                            data:$('#comment').serialize(),
+                            success:function (data) {
+                                switch (data.status) {
+                                    case 1:
+                                        // alert(data.message);
+                                        location.reload();
+                                        break;
+                                    case 0:
+
+                                        break;
+                                }
+                            }
+                        })
+                    }
+                })
+
 
                 // 处理点赞请求
                 $('#like').on('click',function () {

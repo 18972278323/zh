@@ -22,6 +22,12 @@
 
             <button type="button" class="btn btn-primary-outline" id="toArtList">返回列表</button>
             <button type="button" article_id="{$art.id}" id="toEdit" class="btn btn-primary-outline"  >编辑</button>
+            {neq name="art.status" value="0"}
+                <button type="button" article_id="{$art.id}" session_id="{$Think.session.id}" id="toDel" class="btn btn-danger"  >删除</button>
+            {/neq}
+            {eq name="art.status" value="0"}
+                <button type="button" article_id="{$art.id}" session_id="{$Think.session.id}" id="toShelf" class="btn btn-primary"  >重新上线</button>
+            {/eq}
             <button type="button"  article_id="{$art.id}" session_id="{$Think.session.id}" id="fav"
                     {eq name="is_fav" value="1"}
                         class="btn btn-success"  >收藏 | {$countFav}</button>
@@ -59,6 +65,74 @@
                     var url = "{:url('Article/myArt')}";
                     url = url.substring(0, url.length - 5)+"/active/3.html";
                     window.location.href = url;
+                })
+
+                // 重新上线, 上线后需要审核
+                $('#toShelf').on('click',function () {
+                    // 获取文章id和登录用户id
+                    var userId = $(this).attr('session_id');
+                    var artId = $(this).attr('article_id');
+                    if(userId && artId){
+                        $.ajax({
+                            type:'post',
+                            url:'{:url("Article/chgStatus")}',
+                            data:{
+                                id : artId,
+                                status: -2
+                            },
+                            success:function (data) {
+                                switch (data.status) {
+                                    case 1:
+                                        alert(data.message);
+                                        var url = "{:url('Article/myArt')}";
+                                        url = url.substring(0, url.length - 5)+"/active/3.html";
+                                        window.location.href = url;
+                                        break;
+                                    case 0:
+                                        alert(data.message);
+                                        break;
+                                }
+                            }
+                        })
+                    }else{
+                        if(confirm('请先去登录')){
+                            window.location.href = "{:url('index/User/login')}";
+                        }
+                    }
+                })
+
+                // 删除文章
+                $('#toDel').on('click',function () {
+                    // 获取文章id和登录用户id
+                    var userId = $(this).attr('session_id');
+                    var artId = $(this).attr('article_id');
+                    if(userId && artId){
+                        $.ajax({
+                            type:'post',
+                            url:'{:url("Article/chgStatus")}',
+                            data:{
+                                id : artId,
+                                status: 0
+                            },
+                            success:function (data) {
+                                switch (data.status) {
+                                    case 1:
+                                        alert(data.message);
+                                        var url = "{:url('Article/myArt')}";
+                                        url = url.substring(0, url.length - 5)+"/active/3.html";
+                                        window.location.href = url;
+                                        break;
+                                    case 0:
+                                        alert(data.message);
+                                        break;
+                                }
+                            }
+                        })
+                    }else{
+                        if(confirm('请先去登录')){
+                            window.location.href = "{:url('index/User/login')}";
+                        }
+                    }
                 })
 
 

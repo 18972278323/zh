@@ -7,6 +7,8 @@ namespace app\common\controller;
 
 use app\common\model\ArticleCat;
 use think\Controller;
+use think\facade\Cookie;
+use think\facade\Request;
 use think\facade\Session;
 
 class Base extends Controller
@@ -40,6 +42,11 @@ class Base extends Controller
         $res = Session::has('id');
 
         if(!$res){
+            $host = Request::domain();
+            $baseUrl = Request::baseUrl();
+
+            // Cookie存储之前访问的页面
+            Cookie::set('url',$host.$baseUrl);
             $this->redirect(url('User/login'));
         }
     }

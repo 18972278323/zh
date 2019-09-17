@@ -73,7 +73,9 @@
                 $('#submit').on('click',function () {
                     var userId = $(this).attr('userId');
                     if(userId == '' || userId == null){
-                        alert('登录后方可发表评论');
+                        if(confirm('请先去登录，点击确定即可跳转')){
+                            window.location.href = "{:url('index/User/login')}";
+                        }
                     }else{
                         $.ajax({
                             type:'post',
@@ -127,7 +129,7 @@
                         })
                     }else{
                         // alert('请先去登录');
-                        if(confirm('请先去登录')){
+                        if(confirm('请先去登录，点击确定即可跳转')){
                             window.location.href = "{:url('index/User/login')}";
                         }
                     }
@@ -170,7 +172,7 @@
 
                     }else{
                         // alert('请先去登录');
-                        if(confirm('请先去登录')){
+                        if(confirm('请先去登录，点击确定即可跳转')){
                             window.location.href = "{:url('index/User/login')}";
                         }
                     }

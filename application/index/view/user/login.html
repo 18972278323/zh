@@ -57,7 +57,8 @@
                     success: function (data) {
                         switch (data.status) {
                             case 1: // 登录成功
-                                window.location.href = "{:url('index/Index/index')}";
+                                // window.location.href = "{:url('index/Index/index')}";
+                                window.location.href = data.url;
                                 break;
                             case -1: //验证失败
                                 alert(data.message);

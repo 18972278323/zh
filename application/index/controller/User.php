@@ -5,6 +5,7 @@ namespace app\index\controller;
 
 
 use app\common\controller\Base;
+use think\facade\Cookie;
 use think\facade\Request;
 use app\common\model\User as UserModel;
 use think\facade\Session;
@@ -89,7 +90,14 @@ class User extends Base
                     Session::set('id', $data['id']);
                     Session::set('role', $data['is_admin']);
 
-                    return ['status'=>1,'message'=>'登录成功']; // 登录成功
+                    // cookie中获取调转过来的链接, 获取之后将其清除, 如果不存在则跳转主页
+                    $url = Cookie::get('url');
+                    Cookie::delete('url');
+
+                    if(!$url){
+                        $url = url('index/Index/index');
+                    }
+                    return ['status'=>1,'message'=>'登录成功','url'=>$url]; // 登录成功
                 }else{
                     return ['status'=>0,'message'=>'登录信息有误或还未注册']; // 登录成功
 
@@ -98,11 +106,19 @@ class User extends Base
             }
         }else if(Request::isGet()){
             $this->logined(); // 判断用户是否已经登录
+            // 清除Cookie中的url，防止误触
+//            Cookie::delete('url');
             return $this->view->fetch('login',['title'=>'欢迎登录']);
         }else{
             return $this->view->fetch('login',['message'=>'非法操作，请重试']);
         }
 
+    }
+
+    public function clearCookie()
+    {
+        Cookie::delete('url');
+        return ['status'=>1,'message'=>'清除成功'];
     }
 
     /**

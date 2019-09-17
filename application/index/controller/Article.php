@@ -16,6 +16,7 @@ use app\common\model\Comment as CommentsModel;
 use think\Db;
 use think\facade\Request;
 use think\facade\Session;
+use think\facade\Cookie;
 
 class Article extends Base
 {
@@ -28,8 +29,6 @@ class Article extends Base
         if(Request::isGet()){ // 判断登录，查询分类，分配数据，跳转页面
             $this->isLogin();
 
-            $this->view->assign('title','发布文章');
-
             $cateList = ArticleCat::all()->order('sort','asc');
             if(count($cateList)>0 ){
                 $this->assign('cateList',$cateList);
@@ -37,6 +36,7 @@ class Article extends Base
                 return $this->redirect(url('ArticleCate/add'));
             }
 
+            $this->view->assign('title','发布文章');
             return $this->view->fetch();
 
         }else if(Request::isPost()){ // 保存数据
@@ -96,22 +96,17 @@ class Article extends Base
                 $maps[] = ['title','like','%'.$keyword.'%'];
             }
 
-            if($cateId){
-                $artList = Db::table('zh_article')
-                        ->where($maps)
-                        ->order('create_time','desc')
-                        ->paginate(3);
+            $artList = Db::table('zh_article')
+                ->where($maps)
+                ->order('create_time','desc')
+                ->paginate(3,false,['query'=>$_GET]);  //为分页查询添加条件
 
+            // 如果指定分类条件
+            if($cateId){
                 $cateName = ArticleCat::where('id','=',$cateId)->value('name');
                 $this->view->assign('cateName', $cateName);
-            }else{
-                $artList = Db::table('zh_article')
-                    ->where($maps)
-                    ->order('create_time','desc')
-                    ->paginate(3);
-
+            }else{  // 未指定分类条件
                 $this->view->assign('cateName', '全部文章');
-
             }
 
             $this->view->assign('artList', $artList);
@@ -178,6 +173,11 @@ class Article extends Base
             }else{
                 $this->view->assign('is_like',0);
             }
+        }else{
+            // 如果用户未登陆，将当前页面详情链接存储Cookie，便于用户点赞或收藏后跳转到该页面
+            $host = Request::domain();
+            $baseUrl = Request::baseUrl();
+            Cookie::set('url',$host.$baseUrl);
         }
 
         $this->view->assign('title', '文章详情');
@@ -268,14 +268,11 @@ class Article extends Base
     /**
      * 处理文章点赞功能
      * @return array
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     * @throws \think\exception\PDOException
      */
     public function like(){
         if(Request::isAjax()){
+            $this->isLogin();
+
             $res = Request::param();
             unset($res['time']);
 
@@ -326,7 +323,6 @@ class Article extends Base
     /**
      * 修改访问量
      * @return bool
-     * @throws \think\Exception
      */
     public function pv(){
         $artId = Request::param('art_id');  // art_id
@@ -372,7 +368,6 @@ class Article extends Base
     /**
      * 我的收藏列表
      * @return string
-     * @throws \think\Exception
      */
     public function myFav(){
         $this->isLogin();
@@ -402,10 +397,10 @@ class Article extends Base
     /**
      * 去文章编辑界面
      * @return string
-     * @throws \think\Exception
      */
-    public function editArt(){
-        if(Request::isGet()){
+    public function editArt()
+    {
+        if (Request::isGet()) {
             $this->isLogin();
 
             $criteria = [];
@@ -418,49 +413,50 @@ class Article extends Base
                 $query->where($criteria);
             });
 
-            $this->view->assign('art',$art);
-            return $this->view->fetch('detail_edit',['title'=>'编辑文章']);
-        }elseif (Request::isAjax()){
+            $this->view->assign('art', $art);
+            return $this->view->fetch('detail_edit', ['title' => '编辑文章']);
+        } elseif (Request::isAjax()) {
             // 获取基本信息
             $data = Request::param();
             $rule = [
-                'title|文章标题'         => 'require',
-                'cate_id|文章分类'       => 'require',
-                'content|文章内容'       => 'require',
+                'title|文章标题' => 'require',
+                'cate_id|文章分类' => 'require',
+                'content|文章内容' => 'require',
             ];
 
-            $valRes = $this->validate($data,$rule);
-            if($valRes !== true ){
-                return ['status'=>0,'message'=>$valRes];
+            $valRes = $this->validate($data, $rule);
+            if ($valRes !== true) {
+                return ['status' => 0, 'message' => $valRes];
 
             }
 
             // 处理文件上传
             $file = Request::file('');
-            if($file){  // 说明有文件上传
+            if ($file) {  // 说明有文件上传
                 $img = $file['title_img'];
                 $uploadRes = $img->validate([
-                    'ext' => ['jpg','jpeg','gif','png'],
-                    'size'=> 5000000,
+                    'ext' => ['jpg', 'jpeg', 'gif', 'png'],
+                    'size' => 5000000,
                 ])->move('uploads');
 
-                if($uploadRes){
+                if ($uploadRes) {
                     $data['title_img'] = $uploadRes->getSaveName();
-                }else{
+                } else {
                     $messege = $img->getError();
-                    return ['status'=>0,'message'=>$messege];
+                    return ['status' => 0, 'message' => $messege];
                 }
             }
 
             $res = ArticleModel::update($data);
-            if($res){
-                return ['status'=>1,'message'=>'修改成功'];
-            }else{
-                return ['status'=>0,'message'=>'文件上传成功，但是文章保存失败'];
+            if ($res) {
+                return ['status' => 1, 'message' => '修改成功'];
+            } else {
+                return ['status' => 0, 'message' => '文件上传成功，但是文章保存失败'];
             }
         }
 
     }
+
 
     // 被驳回的文章提交审核
     public function subCheck(){

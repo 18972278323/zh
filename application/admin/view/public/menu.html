@@ -41,7 +41,8 @@
             <dt><i class="Hui-iconfont">&#xe60d;</i> 会员管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
             <dd>
                 <ul>
-                    <li><a href="{:url('admin/User/userList')}"  title="会员列表">会员列表</a></li>
+                    <!--<li><a href="{:url('admin/User/userList')}"  title="会员列表">会员列表</a></li>-->
+                    <li><a href="javascript:;" id="userlist" title="会员列表">会员列表</a></li>
                     <li><a href="member-del.html" title="删除的会员">删除的会员</a></li>
                     <li><a href="member-scoreoperation.html" title="积分管理">积分管理</a></li>
                     <li><a href="member-record-browse.html" title="浏览记录">浏览记录</a></li>
@@ -88,4 +89,21 @@
 </aside>
 <div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
 <!--/_menu 作为公共模版分离出去-->
+
+<script>
+    $(function () {
+        
+        // 会员列表
+        $('#userlist').on('click',function () {
+            $.ajax({
+                type: 'post',
+                url:'{:url("admin/User/userList")}',
+                success:function (data) {
+                    alert(1);
+                }
+
+            })
+        })
+    })
+</script>
 

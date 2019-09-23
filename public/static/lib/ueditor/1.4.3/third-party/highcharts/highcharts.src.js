@@ -289,7 +289,7 @@ function attr(elem, prop, value) {
 			elem[setAttribute](prop, value);
 
 		// get the value
-		} else if (elem && elem.getAttribute) { // elem not defined when printing pie demo...
+		} else if (elem && elem.getAttribute) { // elem not defined when printing pie admin...
 			ret = elem.getAttribute(prop);
 		}
 
